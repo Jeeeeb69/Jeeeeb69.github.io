@@ -31,8 +31,18 @@
     </style>
 </head>
 <body>
+
     <h2>Student List</h2>
-    <ul id="student-list"></ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody id="students-table"></tbody>
+    </table>
 
     <h2>My Courses</h2>
     <input type="text" id="search-bar" placeholder="Search by description...">
@@ -53,16 +63,22 @@
     <script>
         let coursesData = [];
 
+        // Fetch and display students
         fetch("student.json")
             .then(response => response.json())
             .then(data => {
-                let studentList = document.getElementById("student-list");
+                let tableBody = document.getElementById("students-table");
 
                 if (data.students && Array.isArray(data.students)) {
                     data.students.forEach(student => {
-                        let listItem = document.createElement("li");
-                        listItem.textContent = `${student.name} - ${student.age} (Course: ${student.course})`;
-                        studentList.appendChild(listItem);
+                        let row = `
+                            <tr>
+                                <td>${student.name}</td>
+                                <td>${student.age}</td>
+                                <td>${student.course}</td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
                     });
                 } else {
                     console.error("Expected 'students' array but got:", data);
@@ -70,6 +86,7 @@
             })
             .catch(error => console.error("Error fetching student JSON:", error));
 
+        // Fetch and display courses
         fetch('courses.json')
             .then(response => response.json())
             .then(data => {
@@ -95,7 +112,7 @@
             });
         }
 
-        // Search functionality
+        // Search functionality for courses
         document.getElementById("search-bar").addEventListener("input", function () {
             let searchText = this.value.toLowerCase();
             let filteredCourses = coursesData.filter(course =>
@@ -104,5 +121,6 @@
             displayCourses(filteredCourses);
         });
     </script>
+
 </body>
 </html>
